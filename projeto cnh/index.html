@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado CNH Brasil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Ícones em SVG para evitar dependências externas complexas
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            const icons = {
+                clock: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+                chevronLeft: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>,
+                chevronRight: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>,
+                check: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+                xCircle: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
+                alert: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+                play: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+                book: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+                award: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+                list: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            };
+            return icons[name] || null;
+        };
+
+        const MOCK_QUESTIONS = [
+            {
+                id: 1,
+                category: 'Legislação de Trânsito',
+                text: 'Dirigir veículo sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência é uma infração:',
+                options: [
+                    'Leve, com retenção do veículo.',
+                    'Média, com multa e apreensão da CNH.',
+                    'Grave, com suspensão do direito de dirigir.',
+                    'Gravíssima, com multa (multiplicada por 10) e suspensão do direito de dirigir.'
+                ],
+                correctAnswer: 3
+            },
+            {
+                id: 2,
+                category: 'Sinalização',
+                text: 'A placa de regulamentação com formato octogonal, fundo vermelho e borda branca indica ao condutor:',
+                options: ['Dê a preferência.', 'Parada obrigatória.', 'Sentido proibido.', 'Alfândega.'],
+                correctAnswer: 1
+            },
+            {
+                id: 3,
+                category: 'Direção Defensiva',
+                text: 'A aquaplanagem é um fenômeno que ocorre pela combinação de:',
+                options: [
+                    'Água na pista, alta velocidade e pneus em mau estado de conservação.',
+                    'Alta velocidade e falta de atenção do condutor.',
+                    'Pistas esburacadas e excesso de peso no veículo.',
+                    'Vento forte e chuva intensa.'
+                ],
+                correctAnswer: 0
+            },
+            {
+                id: 4,
+                category: 'Primeiros Socorros',
+                text: 'Em um acidente de trânsito com vítimas, a primeira atitude a ser tomada pelo condutor que chega ao local deve ser:',
+                options: [
+                    'Retirar as vítimas rapidamente de dentro dos veículos.',
+                    'Oferecer água ou alimento para acalmar os feridos.',
+                    'Sinalizar o local do acidente e acionar o serviço de emergência (SAMU/Bombeiros).',
+                    'Desobstruir a via, empurrando os veículos acidentados.'
+                ],
+                correctAnswer: 2
+            },
+            {
+                id: 5,
+                category: 'Mecânica Básica',
+                text: 'O instrumento do painel que indica a temperatura do motor é o:',
+                options: ['Amperímetro.', 'Odômetro.', 'Termômetro.', 'Tacômetro.'],
+                correctAnswer: 2
+            },
+            {
+                id: 6,
+                category: 'Cidadania e Meio Ambiente',
+                text: 'O catalisador, dispositivo localizado no escapamento dos veículos, tem como função principal:',
+                options: [
+                    'Aumentar a potência do motor.',
+                    'Diminuir a emissão de gases poluentes no meio ambiente.',
+                    'Reduzir o consumo de combustível.',
+                    'Diminuir o ruído do motor.'
+                ],
+                correctAnswer: 1
+            },
+            {
+                id: 7,
+                category: 'Legislação de Trânsito',
+                text: 'A validade máxima da Carteira Nacional de Habilitação (CNH) para condutores com idade inferior a 50 anos é de:',
+                options: ['3 anos.', '5 anos.', '10 anos.', 'Indeterminada.'],
+                correctAnswer: 2
+            },
+            {
+                id: 8,
+                category: 'Direção Defensiva',
+                text: 'Para evitar colisões traseiras, o condutor deve manter uma distância segura do veículo que segue à frente. Essa distância é chamada de:',
+                options: [
+                    'Distância de reação.',
+                    'Distância de frenagem.',
+                    'Distância de parada.',
+                    'Distância de seguimento.'
+                ],
+                correctAnswer: 3
+            },
+            {
+                id: 9,
+                category: 'Sinalização',
+                text: 'As placas de cor amarela e formato quadrado (colocado na diagonal) têm a finalidade de:',
+                options: [
+                    'Regulamentar o trânsito.',
+                    'Advertir os condutores sobre perigos na via.',
+                    'Indicar distâncias e destinos.',
+                    'Educar os usuários da via.'
+                ],
+                correctAnswer: 1
+            },
+            {
+                id: 10,
+                category: 'Legislação de Trânsito',
+                text: 'Transitar com o veículo em calçadas, passeios e ciclovias é considerado infração:',
+                options: ['Gravíssima.', 'Grave.', 'Média.', 'Leve.'],
+                correctAnswer: 0
+            }
+        ];
+
+        const TOTAL_TIME_SECONDS = 40 * 60;
+
+        function App() {
+            const [appState, setAppState] = useState('intro');
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [answers, setAnswers] = useState({});
+            const [timeLeft, setTimeLeft] = useState(TOTAL_TIME_SECONDS);
+            const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+            useEffect(() => {
+                let timer;
+                if (appState === 'quiz' && timeLeft > 0) {
+                    timer = setInterval(() => {
+                        setTimeLeft((prev) => {
+                            if (prev <= 1) {
+                                setAppState('result');
+                                return 0;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(timer);
+            }, [appState, timeLeft]);
+
+            const formatTime = (seconds) => {
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                return `${m}:${s}`;
+            };
+
+            const handleStart = () => {
+                setAppState('quiz');
+                setCurrentQuestionIndex(0);
+                setAnswers({});
+                setTimeLeft(TOTAL_TIME_SECONDS);
+            };
+
+            const handleFinish = () => {
+                setShowConfirmModal(false);
+                setAppState('result');
+            };
+
+            const calculateScore = () => {
+                let correct = 0;
+                MOCK_QUESTIONS.forEach((q, index) => {
+                    if (answers[index] === q.correctAnswer) correct++;
+                });
+                return correct;
+            };
+
+            if (appState === 'intro') {
+                return (
+                    <div className="min-h-screen bg-gray-100 pb-12">
+                        <header className="bg-blue-900 border-b-4 border-green-500 p-4 mb-8">
+                            <div className="max-w-7xl mx-auto flex items-center">
+                                <div className="bg-green-500 p-2 rounded mr-3"><Icon name="book" className="text-blue-900 w-6 h-6" /></div>
+                                <h1 className="text-white font-bold text-xl">Portal do Aluno CNH</h1>
+                            </div>
+                        </header>
+                        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+                            <div className="bg-blue-800 p-8 text-center text-white">
+                                <Icon name="award" className="w-16 h-16 mx-auto mb-4" />
+                                <h2 className="text-3xl font-bold mb-2">Simulado Oficial CNH</h2>
+                                <p className="opacity-90">Prepare-se com questões reais do Detran</p>
+                            </div>
+                            <div className="p-8">
+                                <ul className="space-y-4 mb-8 text-gray-600">
+                                    <li className="flex items-center"><Icon name="check" className="text-green-500 mr-3" /> <span>{MOCK_QUESTIONS.length} questões oficiais.</span></li>
+                                    <li className="flex items-center"><Icon name="clock" className="text-blue-500 mr-3" /> <span>Tempo total: 40 minutos.</span></li>
+                                    <li className="flex items-center"><Icon name="award" className="text-yellow-500 mr-3" /> <span>Mínimo para aprovação: 70%.</span></li>
+                                </ul>
+                                <button onClick={handleStart} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg flex items-center justify-center text-xl transition-all shadow-lg">
+                                    <Icon name="play" className="mr-2" /> Iniciar Simulado
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (appState === 'quiz') {
+                const question = MOCK_QUESTIONS[currentQuestionIndex];
+                return (
+                    <div className="min-h-screen bg-gray-100 pb-12">
+                        <header className="bg-blue-900 border-b-4 border-green-500 p-4 mb-6 sticky top-0 z-10">
+                            <div className="max-w-7xl mx-auto flex justify-between items-center text-white">
+                                <div className="flex items-center font-bold">Questão {currentQuestionIndex + 1}/{MOCK_QUESTIONS.length}</div>
+                                <div className="flex items-center font-mono text-xl"><Icon name="clock" className="mr-2" /> {formatTime(timeLeft)}</div>
+                            </div>
+                        </header>
+
+                        <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2 space-y-6">
+                                <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                                    <div className="p-6 bg-gray-50 border-b font-semibold text-blue-800 uppercase text-xs tracking-wider">{question.category}</div>
+                                    <div className="p-8">
+                                        <h3 className="text-xl font-medium text-gray-800 mb-8 leading-relaxed">{question.text}</h3>
+                                        <div className="space-y-3">
+                                            {question.options.map((opt, idx) => (
+                                                <div 
+                                                    key={idx} 
+                                                    onClick={() => setAnswers({...answers, [currentQuestionIndex]: idx})}
+                                                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex items-center ${answers[currentQuestionIndex] === idx ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'}`}
+                                                >
+                                                    <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center ${answers[currentQuestionIndex] === idx ? 'border-blue-600' : 'border-gray-300'}`}>
+                                                        {answers[currentQuestionIndex] === idx && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                                                    </div>
+                                                    <span className="text-gray-700">{opt}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-gray-50 border-t flex justify-between">
+                                        <button disabled={currentQuestionIndex === 0} onClick={() => setCurrentQuestionIndex(prev => prev - 1)} className="px-4 py-2 text-gray-600 disabled:opacity-30 font-bold flex items-center"><Icon name="chevronLeft" className="mr-1" /> Anterior</button>
+                                        {currentQuestionIndex === MOCK_QUESTIONS.length - 1 
+                                            ? <button onClick={() => setShowConfirmModal(true)} className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold">Finalizar</button>
+                                            : <button onClick={() => setCurrentQuestionIndex(prev => prev + 1)} className="px-4 py-2 text-blue-700 font-bold flex items-center">Próxima <Icon name="chevronRight" className="ml-1" /></button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow border border-gray-200 p-6 h-fit">
+                                <h4 className="text-gray-700 font-bold mb-4 text-center border-b pb-2">Mapa da Prova</h4>
+                                <div className="grid grid-cols-5 gap-2">
+                                    {MOCK_QUESTIONS.map((_, idx) => (
+                                        <button 
+                                            key={idx} 
+                                            onClick={() => setCurrentQuestionIndex(idx)}
+                                            className={`w-full aspect-square rounded font-bold text-sm transition-all border ${currentQuestionIndex === idx ? 'ring-2 ring-blue-600' : ''} ${answers[idx] !== undefined ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {showConfirmModal && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                                <div className="bg-white rounded-xl p-8 max-w-sm w-full text-center">
+                                    <Icon name="alert" className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold mb-2">Finalizar Simulado?</h3>
+                                    <p className="text-gray-600 mb-6">Deseja realmente entregar sua prova agora?</p>
+                                    <div className="flex gap-4">
+                                        <button onClick={() => setShowConfirmModal(false)} className="flex-1 py-2 bg-gray-100 rounded font-bold">Voltar</button>
+                                        <button onClick={handleFinish} className="flex-1 py-2 bg-green-600 text-white rounded font-bold">Sim, Entregar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            if (appState === 'result') {
+                const score = calculateScore();
+                const passed = score >= MOCK_QUESTIONS.length * 0.7;
+                return (
+                    <div className="min-h-screen bg-gray-100 pb-12">
+                        <div className={`p-12 text-center text-white ${passed ? 'bg-green-600' : 'bg-red-600'}`}>
+                            <Icon name={passed ? "check" : "xCircle"} className="w-20 h-20 mx-auto mb-4" />
+                            <h2 className="text-4xl font-bold mb-2">{passed ? 'Aprovado!' : 'Reprovado'}</h2>
+                            <p className="text-xl opacity-90">Você acertou {score} de {MOCK_QUESTIONS.length} questões.</p>
+                            <button onClick={handleStart} className="mt-6 bg-white text-gray-800 px-8 py-2 rounded-full font-bold">Refazer Simulado</button>
+                        </div>
+                        <div className="max-w-4xl mx-auto mt-8 px-4 space-y-4">
+                            {MOCK_QUESTIONS.map((q, idx) => {
+                                const isCorrect = answers[idx] === q.correctAnswer;
+                                return (
+                                    <div key={idx} className="bg-white p-6 rounded-xl border-l-4 shadow-sm" style={{borderColor: isCorrect ? '#22c55e' : '#ef4444'}}>
+                                        <p className="font-bold mb-4 text-gray-800">{idx + 1}. {q.text}</p>
+                                        <div className="space-y-2">
+                                            {q.options.map((opt, oIdx) => (
+                                                <div key={oIdx} className={`p-3 rounded text-sm ${oIdx === q.correctAnswer ? 'bg-green-50 border border-green-200 font-bold text-green-800' : (oIdx === answers[idx] ? 'bg-red-50 border border-red-200 text-red-800 line-through' : 'bg-gray-50 text-gray-500')}`}>
+                                                    {opt} {oIdx === q.correctAnswer && " (Correta)"}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
