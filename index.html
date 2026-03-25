@@ -37,113 +37,57 @@
             return icons[name] || null;
         };
 
-        const MOCK_QUESTIONS = [
-            {
-                id: 1,
-                category: 'Legislação de Trânsito',
-                text: 'Dirigir veículo sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência é uma infração:',
-                options: [
-                    'Leve, com retenção do veículo.',
-                    'Média, com multa e apreensão da CNH.',
-                    'Grave, com suspensão do direito de dirigir.',
-                    'Gravíssima, com multa (multiplicada por 10) e suspensão do direito de dirigir.'
-                ],
-                correctAnswer: 3
-            },
-            {
-                id: 2,
-                category: 'Sinalização',
-                text: 'A placa de regulamentação com formato octogonal, fundo vermelho e borda branca indica ao condutor:',
-                options: ['Dê a preferência.', 'Parada obrigatória.', 'Sentido proibido.', 'Alfândega.'],
-                correctAnswer: 1
-            },
-            {
-                id: 3,
-                category: 'Direção Defensiva',
-                text: 'A aquaplanagem é um fenômeno que ocorre pela combinação de:',
-                options: [
-                    'Água na pista, alta velocidade e pneus em mau estado de conservação.',
-                    'Alta velocidade e falta de atenção do condutor.',
-                    'Pistas esburacadas e excesso de peso no veículo.',
-                    'Vento forte e chuva intensa.'
-                ],
-                correctAnswer: 0
-            },
-            {
-                id: 4,
-                category: 'Primeiros Socorros',
-                text: 'Em um acidente de trânsito com vítimas, a primeira atitude a ser tomada pelo condutor que chega ao local deve ser:',
-                options: [
-                    'Retirar as vítimas rapidamente de dentro dos veículos.',
-                    'Oferecer água ou alimento para acalmar os feridos.',
-                    'Sinalizar o local do acidente e acionar o serviço de emergência (SAMU/Bombeiros).',
-                    'Desobstruir a via, empurrando os veículos acidentados.'
-                ],
-                correctAnswer: 2
-            },
-            {
-                id: 5,
-                category: 'Mecânica Básica',
-                text: 'O instrumento do painel que indica a temperatura do motor é o:',
-                options: ['Amperímetro.', 'Odômetro.', 'Termômetro.', 'Tacômetro.'],
-                correctAnswer: 2
-            },
-            {
-                id: 6,
-                category: 'Cidadania e Meio Ambiente',
-                text: 'O catalisador, dispositivo localizado no escapamento dos veículos, tem como função principal:',
-                options: [
-                    'Aumentar a potência do motor.',
-                    'Diminuir a emissão de gases poluentes no meio ambiente.',
-                    'Reduzir o consumo de combustível.',
-                    'Diminuir o ruído do motor.'
-                ],
-                correctAnswer: 1
-            },
-            {
-                id: 7,
-                category: 'Legislação de Trânsito',
-                text: 'A validade máxima da Carteira Nacional de Habilitação (CNH) para condutores com idade inferior a 50 anos é de:',
-                options: ['3 anos.', '5 anos.', '10 anos.', 'Indeterminada.'],
-                correctAnswer: 2
-            },
-            {
-                id: 8,
-                category: 'Direção Defensiva',
-                text: 'Para evitar colisões traseiras, o condutor deve manter uma distância segura do veículo que segue à frente. Essa distância é chamada de:',
-                options: [
-                    'Distância de reação.',
-                    'Distância de frenagem.',
-                    'Distância de parada.',
-                    'Distância de seguimento.'
-                ],
-                correctAnswer: 3
-            },
-            {
-                id: 9,
-                category: 'Sinalização',
-                text: 'As placas de cor amarela e formato quadrado (colocado na diagonal) têm a finalidade de:',
-                options: [
-                    'Regulamentar o trânsito.',
-                    'Advertir os condutores sobre perigos na via.',
-                    'Indicar distâncias e destinos.',
-                    'Educar os usuários da via.'
-                ],
-                correctAnswer: 1
-            },
-            {
-                id: 10,
-                category: 'Legislação de Trânsito',
-                text: 'Transitar com o veículo em calçadas, passeios e ciclovias é considerado infração:',
-                options: ['Gravíssima.', 'Grave.', 'Média.', 'Leve.'],
-                correctAnswer: 0
-            }
+        // Banco de questões ampliado com leis atualizadas (40 questões para sorteio)
+        const QUESTION_POOL = [
+            { category: 'Legislação de Trânsito', text: 'Dirigir veículo sob a influência de álcool ou de qualquer outra substância psicoativa que determine dependência é uma infração:', options: ['Leve, com retenção do veículo.', 'Média, com multa e apreensão da CNH.', 'Grave, com suspensão do direito de dirigir.', 'Gravíssima, com multa (multiplicada por 10) e suspensão do direito de dirigir.'], correctAnswer: 3 },
+            { category: 'Sinalização', text: 'A placa de regulamentação com formato octogonal, fundo vermelho e borda branca indica ao condutor:', options: ['Dê a preferência.', 'Parada obrigatória.', 'Sentido proibido.', 'Alfândega.'], correctAnswer: 1 },
+            { category: 'Direção Defensiva', text: 'A aquaplanagem é um fenômeno que ocorre pela combinação de:', options: ['Água na pista, alta velocidade e pneus em mau estado de conservação.', 'Alta velocidade e falta de atenção do condutor.', 'Pistas esburacadas e excesso de peso no veículo.', 'Vento forte e chuva intensa.'], correctAnswer: 0 },
+            { category: 'Primeiros Socorros', text: 'Em um acidente de trânsito com vítimas, a primeira atitude a ser tomada pelo condutor que chega ao local deve ser:', options: ['Retirar as vítimas rapidamente de dentro dos veículos.', 'Oferecer água ou alimento para acalmar os feridos.', 'Sinalizar o local do acidente e acionar o serviço de emergência.', 'Desobstruir a via, empurrando os veículos acidentados.'], correctAnswer: 2 },
+            { category: 'Mecânica Básica', text: 'O instrumento do painel que indica a temperatura do motor é o:', options: ['Amperímetro.', 'Odômetro.', 'Termômetro.', 'Tacômetro.'], correctAnswer: 2 },
+            { category: 'Cidadania e Meio Ambiente', text: 'O catalisador, dispositivo localizado no escapamento dos veículos, tem como função principal:', options: ['Aumentar a potência do motor.', 'Diminuir a emissão de gases poluentes no meio ambiente.', 'Reduzir o consumo de combustível.', 'Diminuir o ruído do motor.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'A validade máxima da Carteira Nacional de Habilitação (CNH) para condutores com idade inferior a 50 anos é de:', options: ['3 anos.', '5 anos.', '10 anos.', 'Indeterminada.'], correctAnswer: 2 },
+            { category: 'Direção Defensiva', text: 'Para evitar colisões traseiras, o condutor deve manter uma distância segura do veículo que segue à frente. Essa distância é chamada de:', options: ['Distância de reação.', 'Distância de frenagem.', 'Distância de parada.', 'Distância de seguimento.'], correctAnswer: 3 },
+            { category: 'Sinalização', text: 'As placas de cor amarela e formato quadrado (colocado na diagonal) têm a finalidade de:', options: ['Regulamentar o trânsito.', 'Advertir os condutores sobre perigos na via.', 'Indicar distâncias e destinos.', 'Educar os usuários da via.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'Transitar com o veículo em calçadas, passeios e ciclovias é considerado infração:', options: ['Gravíssima.', 'Grave.', 'Média.', 'Leve.'], correctAnswer: 0 },
+            { category: 'Legislação de Trânsito', text: 'De acordo com as novas regras do CTB, o uso do farol baixo aceso durante o dia é obrigatório apenas em:', options: ['Todas as rodovias do país, independentemente do trecho.', 'Rodovias de pista simples situadas fora dos perímetros urbanos.', 'Qualquer via urbana durante períodos de chuva leve.', 'Vias de trânsito rápido dentro das cidades.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'Crianças só podem ser transportadas no banco dianteiro do veículo a partir de qual idade ou altura?', options: ['7 anos ou 1,30m de altura.', '10 anos de idade ou que tenham atingido 1,45m de altura.', '12 anos de idade, independentemente da altura.', '8 anos, desde que usem cinto de segurança comum.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'O limite de pontos na CNH, para suspensão do direito de dirigir em caso de não haver nenhuma infração gravíssima no prontuário no período de 12 meses, é de:', options: ['20 pontos.', '30 pontos.', '40 pontos.', '50 pontos.'], correctAnswer: 2 },
+            { category: 'Direção Defensiva', text: 'Ao perceber que será ultrapassado, o condutor deve:', options: ['Acelerar o veículo para evitar a ultrapassagem.', 'Buzinar alertando o outro condutor do perigo.', 'Manter a velocidade e, se estiver na faixa da esquerda, deslocar-se para a direita.', 'Deslocar-se para o acostamento e parar o veículo.'], correctAnswer: 2 },
+            { category: 'Primeiros Socorros', text: 'O omissão de socorro em acidentes de trânsito é considerada:', options: ['Infração grave apenas, sujeita a multa.', 'Crime de trânsito e infração gravíssima, sujeita a multa e suspensão da CNH.', 'Infração média, caso a vítima não tenha lesões aparentes.', 'Direito do condutor, caso ele se sinta inseguro no local.'], correctAnswer: 1 },
+            { category: 'Sinalização', text: 'Qual a cor utilizada na sinalização de obras em vias públicas?', options: ['Vermelho e Branco.', 'Laranja e Preto.', 'Amarelo e Preto.', 'Azul e Branco.'], correctAnswer: 1 },
+            { category: 'Mecânica Básica', text: 'A finalidade do óleo lubrificante no motor é:', options: ['Aumentar o atrito entre as peças.', 'Refrigerar o radiador.', 'Reduzir o atrito entre as peças móveis e ajudar na refrigeração.', 'Aumentar a potência consumindo menos combustível.'], correctAnswer: 2 },
+            { category: 'Meio Ambiente e Cidadania', text: 'O uso prolongado da buzina, além de ser infração de trânsito, é prejudicial ao meio ambiente porque causa:', options: ['Poluição atmosférica.', 'Poluição sonora.', 'Aquecimento global.', 'Degradação da camada de ozônio.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'Veículos com campanhas de "Recall" (chamamento) pendentes há mais de 1 ano:', options: ['Terão o licenciamento anual bloqueado até a regularização.', 'Poderão circular apenas em perímetro urbano.', 'Pagarão o IPVA em dobro.', 'Perderão a placa original do veículo.'], correctAnswer: 0 },
+            { category: 'Direção Defensiva', text: 'O cinto de segurança é obrigatório para:', options: ['Apenas o condutor do veículo.', 'O condutor e o passageiro do banco dianteiro.', 'Todos os ocupantes do veículo, em todas as vias do território nacional.', 'Apenas em rodovias estaduais e federais.'], correctAnswer: 2 },
+            { category: 'Primeiros Socorros', text: 'Em caso de hemorragia externa, o procedimento correto é:', options: ['Fazer um torniquete imediatamente.', 'Aplicar pomadas cicatrizantes na ferida.', 'Fazer compressão direta no local com pano limpo.', 'Dar bastante água para a vítima beber.'], correctAnswer: 2 },
+            { category: 'Legislação de Trânsito', text: 'Segurar ou manusear telefone celular enquanto dirige é infração:', options: ['Leve.', 'Média.', 'Grave.', 'Gravíssima.'], correctAnswer: 3 },
+            { category: 'Mecânica Básica', text: 'Os pneus perdem a aderência na chuva devido ao excesso de água na pista. Esse fenômeno afeta principalmente pneus que:', options: ['Estão excessivamente calibrados.', 'Possuem sulcos com profundidade menor que 1,6 milímetro (carecas).', 'Foram fabricados há menos de 1 ano.', 'São mais largos que o padrão de fábrica.'], correctAnswer: 1 },
+            { category: 'Sinalização', text: 'As faixas de pedestres são classificadas como sinalização:', options: ['Vertical.', 'Horizontal.', 'Semafórica.', 'Auxiliar.'], correctAnswer: 1 },
+            { category: 'Direção Defensiva', text: 'Em um cruzamento não sinalizado, a preferência de passagem é do veículo que:', options: ['Estiver desenvolvendo maior velocidade.', 'Vier pela esquerda do condutor.', 'Vier pela direita do condutor.', 'Piscar os faróis primeiro.'], correctAnswer: 2 },
+            { category: 'Primeiros Socorros', text: 'Se a vítima de um acidente de trânsito estiver usando capacete, o socorrista deve:', options: ['Retirá-lo imediatamente para facilitar a respiração.', 'Não retirar o capacete, aguardando o resgate especializado.', 'Apenas levantar a viseira e retirar se a vítima pedir.', 'Puxá-lo com força caso esteja preso.'], correctAnswer: 1 },
+            { category: 'Meio Ambiente e Cidadania', text: 'É responsabilidade de todo condutor contribuir para a harmonia no trânsito. Para isso, ele deve:', options: ['Exigir sempre os seus direitos, mesmo que cause atrito.', 'Ser tolerante e adotar atitudes que evitem conflitos com outros usuários da via.', 'Buzinar para pedestres desatentos.', 'Acelerar o veículo ao ver o sinal amarelo.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'A ultrapassagem pela direita é permitida apenas quando:', options: ['O veículo da frente estiver em baixa velocidade.', 'O veículo da frente indicar, por sinal de luz, que a via está livre.', 'O veículo da frente estiver na faixa da esquerda e indicar que vai entrar à esquerda.', 'Houver engarrafamento na faixa da esquerda.'], correctAnswer: 2 },
+            { category: 'Sinalização', text: 'O sinal semafórico vermelho piscante indica:', options: ['Via interditada mais à frente.', 'Advertência, devendo o condutor reduzir a velocidade e parar antes de cruzar.', 'Que o semáforo está quebrado, passe com velocidade alta.', 'Permissão para conversão à direita, sem parar.'], correctAnswer: 1 },
+            { category: 'Mecânica Básica', text: 'A bateria do veículo tem a função de:', options: ['Fornecer a centelha para a queima de combustível.', 'Armazenar e fornecer energia elétrica aos equipamentos do veículo.', 'Resfriar a água do sistema de arrefecimento.', 'Filtrar os gases poluentes do escapamento.'], correctAnswer: 1 },
+            { category: 'Direção Defensiva', text: 'Tempo de reação é o intervalo entre:', options: ['Acionar os freios até a parada total.', 'Ver o perigo e tomar a decisão de acionar os freios.', 'Acionar os freios até a colisão inevitável.', 'O início da viagem e o destino final.'], correctAnswer: 1 },
+            { category: 'Legislação de Trânsito', text: 'A CNH, expedida em meio físico e/ou digital, tem validade:', options: ['Apenas no estado em que foi emitida.', 'Somente nas capitais brasileiras.', 'Em todo o território nacional.', 'Apenas no Mercosul.'], correctAnswer: 2 },
+            { category: 'Primeiros Socorros', text: 'Em suspeita de fratura de coluna em vítima de acidente, deve-se:', options: ['Mover a vítima para o acostamento rapidamente.', 'Fazer massagem cardíaca.', 'Não movimentar a vítima e aguardar o socorro profissional.', 'Sentar a vítima para que respire melhor.'], correctAnswer: 2 },
+            { category: 'Meio Ambiente e Cidadania', text: 'Qual destas atitudes contribui para a diminuição da poluição atmosférica?', options: ['Acelerar o veículo com o motor desengrenado.', 'Retirar o catalisador do veículo para ganhar potência.', 'Fazer a manutenção periódica do sistema de injeção/carburador.', 'Transitar sempre em marchas reduzidas.'], correctAnswer: 2 },
+            { category: 'Legislação de Trânsito', text: 'O exame toxicológico é obrigatório para condutores habilitados nas categorias:', options: ['A e B.', 'C, D e E.', 'Somente E.', 'B e C.'], correctAnswer: 1 },
+            { category: 'Direção Defensiva', text: 'O "ponto cego" dos veículos é a região do retrovisor que:', options: ['Causa ofuscamento por luz alta de quem vem atrás.', 'O condutor tem visão ampla e limpa.', 'Impede o condutor de ver outros veículos, escondendo-os do campo visual.', 'Amplia os faróis no período noturno.'], correctAnswer: 2 },
+            { category: 'Sinalização', text: 'As linhas de divisão de fluxos de mesmo sentido são pintadas na cor:', options: ['Amarela.', 'Branca.', 'Vermelha.', 'Azul.'], correctAnswer: 1 },
+            { category: 'Mecânica Básica', text: 'Qual componente é responsável por transmitir o movimento do volante para as rodas?', options: ['Sistema de arrefecimento.', 'Sistema de suspensão.', 'Sistema de direção.', 'Sistema de transmissão.'], correctAnswer: 2 },
+            { category: 'Direção Defensiva', text: 'Para realizar uma curva com segurança, o condutor deve:', options: ['Acelerar forte na entrada da curva e frear no meio dela.', 'Reduzir a velocidade antes de entrar na curva e acelerar suavemente durante sua execução.', 'Frear bruscamente durante o trajeto da curva.', 'Desengrenar o veículo (ponto morto) durante a curva.'], correctAnswer: 1 },
+            { category: 'Primeiros Socorros', text: 'Em caso de acidentes envolvendo cabos de rede elétrica que caem sobre o veículo, os ocupantes devem:', options: ['Sair imediatamente do veículo pulando com os dois pés juntos.', 'Sair correndo o mais rápido possível.', 'Permanecer dentro do veículo, sem tocar nas partes metálicas, e aguardar socorro.', 'Tentar afastar os fios usando as mãos.'], correctAnswer: 2 }
         ];
 
         const TOTAL_TIME_SECONDS = 40 * 60;
+        const REQUIRED_SCORE = 20;
+        const TOTAL_QUESTIONS_PER_EXAM = 30;
 
         function App() {
             const [appState, setAppState] = useState('intro');
+            const [activeQuestions, setActiveQuestions] = useState([]);
             const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
             const [answers, setAnswers] = useState({});
             const [timeLeft, setTimeLeft] = useState(TOTAL_TIME_SECONDS);
@@ -172,6 +116,10 @@
             };
 
             const handleStart = () => {
+                // Sorteia 30 questões aleatórias do banco toda vez que inicia
+                const shuffled = [...QUESTION_POOL].sort(() => 0.5 - Math.random());
+                setActiveQuestions(shuffled.slice(0, TOTAL_QUESTIONS_PER_EXAM));
+                
                 setAppState('quiz');
                 setCurrentQuestionIndex(0);
                 setAnswers({});
@@ -185,7 +133,7 @@
 
             const calculateScore = () => {
                 let correct = 0;
-                MOCK_QUESTIONS.forEach((q, index) => {
+                activeQuestions.forEach((q, index) => {
                     if (answers[index] === q.correctAnswer) correct++;
                 });
                 return correct;
@@ -208,9 +156,9 @@
                             </div>
                             <div className="p-8">
                                 <ul className="space-y-4 mb-8 text-gray-600">
-                                    <li className="flex items-center"><Icon name="check" className="text-green-500 mr-3" /> <span>{MOCK_QUESTIONS.length} questões oficiais.</span></li>
+                                    <li className="flex items-center"><Icon name="check" className="text-green-500 mr-3" /> <span>{TOTAL_QUESTIONS_PER_EXAM} questões oficiais sorteadas.</span></li>
                                     <li className="flex items-center"><Icon name="clock" className="text-blue-500 mr-3" /> <span>Tempo total: 40 minutos.</span></li>
-                                    <li className="flex items-center"><Icon name="award" className="text-yellow-500 mr-3" /> <span>Mínimo para aprovação: 70%.</span></li>
+                                    <li className="flex items-center"><Icon name="award" className="text-yellow-500 mr-3" /> <span>Mínimo para aprovação: {REQUIRED_SCORE} acertos.</span></li>
                                 </ul>
                                 <button onClick={handleStart} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg flex items-center justify-center text-xl transition-all shadow-lg">
                                     <Icon name="play" className="mr-2" /> Iniciar Simulado
@@ -222,12 +170,12 @@
             }
 
             if (appState === 'quiz') {
-                const question = MOCK_QUESTIONS[currentQuestionIndex];
+                const question = activeQuestions[currentQuestionIndex];
                 return (
                     <div className="min-h-screen bg-gray-100 pb-12">
                         <header className="bg-blue-900 border-b-4 border-green-500 p-4 mb-6 sticky top-0 z-10">
                             <div className="max-w-7xl mx-auto flex justify-between items-center text-white">
-                                <div className="flex items-center font-bold">Questão {currentQuestionIndex + 1}/{MOCK_QUESTIONS.length}</div>
+                                <div className="flex items-center font-bold">Questão {currentQuestionIndex + 1}/{TOTAL_QUESTIONS_PER_EXAM}</div>
                                 <div className="flex items-center font-mono text-xl"><Icon name="clock" className="mr-2" /> {formatTime(timeLeft)}</div>
                             </div>
                         </header>
@@ -255,7 +203,7 @@
                                     </div>
                                     <div className="p-4 bg-gray-50 border-t flex justify-between">
                                         <button disabled={currentQuestionIndex === 0} onClick={() => setCurrentQuestionIndex(prev => prev - 1)} className="px-4 py-2 text-gray-600 disabled:opacity-30 font-bold flex items-center"><Icon name="chevronLeft" className="mr-1" /> Anterior</button>
-                                        {currentQuestionIndex === MOCK_QUESTIONS.length - 1 
+                                        {currentQuestionIndex === TOTAL_QUESTIONS_PER_EXAM - 1 
                                             ? <button onClick={() => setShowConfirmModal(true)} className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold">Finalizar</button>
                                             : <button onClick={() => setCurrentQuestionIndex(prev => prev + 1)} className="px-4 py-2 text-blue-700 font-bold flex items-center">Próxima <Icon name="chevronRight" className="ml-1" /></button>
                                         }
@@ -266,7 +214,7 @@
                             <div className="bg-white rounded-xl shadow border border-gray-200 p-6 h-fit">
                                 <h4 className="text-gray-700 font-bold mb-4 text-center border-b pb-2">Mapa da Prova</h4>
                                 <div className="grid grid-cols-5 gap-2">
-                                    {MOCK_QUESTIONS.map((_, idx) => (
+                                    {activeQuestions.map((_, idx) => (
                                         <button 
                                             key={idx} 
                                             onClick={() => setCurrentQuestionIndex(idx)}
@@ -298,17 +246,17 @@
 
             if (appState === 'result') {
                 const score = calculateScore();
-                const passed = score >= MOCK_QUESTIONS.length * 0.7;
+                const passed = score >= REQUIRED_SCORE;
                 return (
                     <div className="min-h-screen bg-gray-100 pb-12">
                         <div className={`p-12 text-center text-white ${passed ? 'bg-green-600' : 'bg-red-600'}`}>
                             <Icon name={passed ? "check" : "xCircle"} className="w-20 h-20 mx-auto mb-4" />
                             <h2 className="text-4xl font-bold mb-2">{passed ? 'Aprovado!' : 'Reprovado'}</h2>
-                            <p className="text-xl opacity-90">Você acertou {score} de {MOCK_QUESTIONS.length} questões.</p>
+                            <p className="text-xl opacity-90">Você acertou {score} de {TOTAL_QUESTIONS_PER_EXAM} questões.</p>
                             <button onClick={handleStart} className="mt-6 bg-white text-gray-800 px-8 py-2 rounded-full font-bold">Refazer Simulado</button>
                         </div>
                         <div className="max-w-4xl mx-auto mt-8 px-4 space-y-4">
-                            {MOCK_QUESTIONS.map((q, idx) => {
+                            {activeQuestions.map((q, idx) => {
                                 const isCorrect = answers[idx] === q.correctAnswer;
                                 return (
                                     <div key={idx} className="bg-white p-6 rounded-xl border-l-4 shadow-sm" style={{borderColor: isCorrect ? '#22c55e' : '#ef4444'}}>
